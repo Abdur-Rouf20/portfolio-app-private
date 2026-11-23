@@ -26,15 +26,22 @@ if (!existing) {
   console.log('Admin account already exists; it was not changed');
 }
 
-await Profile.findOneAndUpdate({}, {
-  name: 'Your Name',
-  headline: 'Software Quality Assurance & Full-Stack Engineer',
-  location: 'Bangladesh',
-  email,
-  summary: 'I build reliable software experiences through quality engineering, automation and full-stack development.',
-  about: 'Replace this sample biography with your own professional story, experience and career goals.',
-  socialLinks: { github: 'https://github.com/your-username', linkedin: 'https://linkedin.com/in/your-profile' }
-}, { upsert: true, new: true });
+// Never overwrite an existing profile when the seed script is run again.
+const existingProfile = await Profile.findOne();
+if (!existingProfile) {
+  await Profile.create({
+    name: 'Your Name',
+    headline: 'Software Quality Assurance & Full-Stack Engineer',
+    location: 'Bangladesh',
+    email,
+    summary: 'I build reliable software experiences through quality engineering, automation and full-stack development.',
+    about: 'Replace this sample biography with your own professional story, experience and career goals.',
+    socialLinks: { github: 'https://github.com/your-username', linkedin: 'https://linkedin.com/in/your-profile' }
+  });
+  console.log('Sample profile created');
+} else {
+  console.log('Existing profile preserved; it was not changed');
+}
 
 if (await PortfolioItem.countDocuments() === 0) {
   await PortfolioItem.insertMany([
